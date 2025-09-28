@@ -1,0 +1,38 @@
+[gd_scene load_steps=2 format=3 uid="uid://bxtx4kbcwqlsm"]
+
+[ext_resource type="Script" path="res://scripts/DebugHealthTimer.gd" id="1_debug"]
+
+[node name="DebugHealthTimer" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_debug")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.1, 0.1, 0.2, 1.0)
+
+[node name="Instructions" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = 150.0
+offset_right = 200.0
+offset_bottom = 250.0
+text = "调试快捷键:
+F1 - 设置游戏时间30秒
+F2 - 设置休息时间30秒
+F3 - 触发休息
+F4 - 完成休息
+F5 - 重置计时器
+F12 - 打印状态"
+horizontal_alignment = 1
+vertical_alignment = 1

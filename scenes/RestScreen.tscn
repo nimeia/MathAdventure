@@ -1,0 +1,99 @@
+[gd_scene load_steps=2 format=3 uid="uid://dqx1vac82cdcs"]
+
+[ext_resource type="Script" path="res://scripts/RestScreen.gd" id="1_8x6qn"]
+
+[node name="RestScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_8x6qn")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.2, 0.3, 0.5, 0.9)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="RestIcon" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "😴"
+horizontal_alignment = 1
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "时间到啦！请休息一下吧"
+horizontal_alignment = 1
+
+[node name="MessageLabel" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "为了保护您的视力和健康，\n请休息 10 分钟后再继续冒险。"
+horizontal_alignment = 1
+
+[node name="RestTimeLabel" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "剩余休息时间：10:00"
+horizontal_alignment = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+max_value = 600.0
+value = 600.0
+show_percentage = false
+
+[node name="RestCompleteLabel" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "🎉 休息完成！你可以继续游戏啦！"
+horizontal_alignment = 1
+visible = false
+
+[node name="ContinueButton" type="Button" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "继续游戏"
+visible = false
+
+[node name="HealthTips" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -150.0
+offset_right = -20.0
+offset_bottom = -20.0
+
+[node name="TipsTitle" type="Label" parent="HealthTips"]
+layout_mode = 2
+text = "💡 健康小贴士"
+horizontal_alignment = 1
+
+[node name="TipsList" type="VBoxContainer" parent="HealthTips"]
+layout_mode = 2
+
+[node name="Tip1" type="Label" parent="HealthTips/TipsList"]
+layout_mode = 2
+text = "• 远眺窗外，放松眼部肌肉"
+autowrap_mode = 2
+
+[node name="Tip2" type="Label" parent="HealthTips/TipsList"]
+layout_mode = 2
+text = "• 起身走动，活动筋骨"
+autowrap_mode = 2
+
+[node name="Tip3" type="Label" parent="HealthTips/TipsList"]
+layout_mode = 2
+text = "• 喝点水，保持身体水分"
+autowrap_mode = 2

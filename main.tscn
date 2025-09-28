@@ -1,0 +1,203 @@
+[gd_scene load_steps=4 format=3 uid="uid://cqjb8gnjwkp5u"]
+
+[ext_resource type="Script" uid="uid://cs1xfaywt52il" path="res://scripts/GameManager.gd" id="1_0r4pm"]
+[ext_resource type="Script" uid="uid://0kkvo280u4x7" path="res://scripts/FruitTree.gd" id="2_5ydn2"]
+[ext_resource type="Script" uid="uid://b0ectnwocnxap" path="res://scripts/AnswerButton.gd" id="3_7x8qn"]
+
+[node name="GameManager" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0r4pm")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.529412, 0.807843, 1, 1)
+
+[node name="FruitTree" type="Node2D" parent="."]
+position = Vector2(640, 400)
+script = ExtResource("2_5ydn2")
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TopPanel" type="HBoxContainer" parent="UI"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 60.0
+
+[node name="ScoreLabel" type="Label" parent="UI/TopPanel"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "金币：0 | 关卡：1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GameTimerLabel" type="Label" parent="UI/TopPanel"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "🕰️ 游戏时间：10:00"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CountdownBar" type="ProgressBar" parent="UI/TopPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 5.0
+value = 5.0
+show_percentage = false
+
+[node name="QuestionTimerOverlay" type="Label" parent="UI"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -120.0
+offset_top = 100.0
+offset_right = -20.0
+offset_bottom = 160.0
+text = "5"
+horizontal_alignment = 1
+vertical_alignment = 1
+modulate = Color(1, 1, 1, 0.7)
+
+[node name="InstructionLabel" type="Label" parent="UI"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -200.0
+offset_right = 200.0
+offset_bottom = -150.0
+text = "🍎 数一数树上有多少个果子？\n点击按钮或按数字键选择答案"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AnswerPanel" type="HBoxContainer" parent="UI"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -180.0
+offset_top = -100.0
+offset_right = 180.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+alignment = 1
+
+[node name="AnswerButton1" type="Button" parent="UI/AnswerPanel"]
+layout_mode = 2
+text = "1"
+script = ExtResource("3_7x8qn")
+
+[node name="AnswerButton2" type="Button" parent="UI/AnswerPanel"]
+layout_mode = 2
+text = "2"
+script = ExtResource("3_7x8qn")
+
+[node name="AnswerButton3" type="Button" parent="UI/AnswerPanel"]
+layout_mode = 2
+text = "3"
+script = ExtResource("3_7x8qn")
+
+[node name="FeedbackLabel" type="Label" parent="UI"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -50.0
+offset_right = 100.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "反馈信息"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LevelCompletePopup" type="Control" parent="UI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="UI/LevelCompletePopup"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5)
+
+[node name="Panel" type="Panel" parent="UI/LevelCompletePopup"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/LevelCompletePopup/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="UI/LevelCompletePopup/Panel/VBoxContainer"]
+layout_mode = 2
+text = "关卡完成！"
+horizontal_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="UI/LevelCompletePopup/Panel/VBoxContainer"]
+layout_mode = 2
+text = "统计信息"
+horizontal_alignment = 1
+
+[node name="ContinueButton" type="Button" parent="UI/LevelCompletePopup/Panel/VBoxContainer"]
+layout_mode = 2
+text = "继续下一关"
+
+[node name="Audio" type="Node" parent="."]
+
+[node name="CorrectSound" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="WrongSound" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="TimeoutSound" type="AudioStreamPlayer" parent="Audio"]

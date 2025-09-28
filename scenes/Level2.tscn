@@ -1,0 +1,334 @@
+[gd_scene load_steps=5 format=3 uid="uid://bqjb8gnjwkp5u"]
+
+[ext_resource type="Script" path="res://scripts/Level2Manager.gd" id="1_level2"]
+[ext_resource type="Script" path="res://scripts/NumberStone.gd" id="2_stone"]
+[ext_resource type="Script" path="res://scripts/ComparisonButton.gd" id="3_button"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
+bg_color = Color(0.1, 0.5, 0.8, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+
+[node name="Level2Manager" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_level2")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.6, 0.8, 1, 1)
+
+[node name="GameArea" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -100.0
+offset_right = 300.0
+offset_bottom = 100.0
+
+[node name="LeftStone" type="Control" parent="GameArea"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 20.0
+offset_top = -80.0
+offset_right = 180.0
+offset_bottom = 80.0
+script = ExtResource("2_stone")
+
+[node name="Background" type="Panel" parent="GameArea/LeftStone"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="NumberLabel" type="Label" parent="GameArea/LeftStone"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "45"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RightStone" type="Control" parent="GameArea"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -80.0
+offset_right = -20.0
+offset_bottom = 80.0
+script = ExtResource("2_stone")
+
+[node name="Background" type="Panel" parent="GameArea/RightStone"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="NumberLabel" type="Label" parent="GameArea/RightStone"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "78"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SymbolDisplay" type="Label" parent="GameArea"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -30.0
+offset_top = -30.0
+offset_right = 30.0
+offset_bottom = 30.0
+theme_override_font_sizes/font_size = 48
+text = "?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="TopPanel" type="HBoxContainer" parent="UI"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 60.0
+
+[node name="ScoreLabel" type="Label" parent="UI/TopPanel"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "金币：0 | 关卡：2"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GameTimerLabel" type="Label" parent="UI/TopPanel"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "🕰️ 游戏时间：10:00"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CountdownBar" type="ProgressBar" parent="UI/TopPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 5.0
+value = 5.0
+show_percentage = false
+
+[node name="QuestionTimerOverlay" type="Label" parent="UI"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -120.0
+offset_top = 100.0
+offset_right = -20.0
+offset_bottom = 160.0
+text = "5"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="InstructionLabel" type="Label" parent="UI"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -250.0
+offset_right = 250.0
+offset_bottom = -200.0
+text = "🌉 选择正确的符号通过比较大小桥！
+点击按钮或按数字键选择答案
+1='>',  2='<',  3='='"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ButtonPanel" type="HBoxContainer" parent="UI"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -120.0
+offset_right = 150.0
+offset_bottom = -40.0
+alignment = 1
+
+[node name="GreaterButton" type="Button" parent="UI/ButtonPanel"]
+layout_mode = 2
+text = ">"
+script = ExtResource("3_button")
+
+[node name="LessButton" type="Button" parent="UI/ButtonPanel"]
+layout_mode = 2
+text = "<"
+script = ExtResource("3_button")
+
+[node name="EqualButton" type="Button" parent="UI/ButtonPanel"]
+layout_mode = 2
+text = "="
+script = ExtResource("3_button")
+
+[node name="FeedbackLabel" type="Label" parent="UI"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = 50.0
+offset_right = 150.0
+offset_bottom = 100.0
+theme_override_font_sizes/font_size = 24
+text = "反馈信息"
+horizontal_alignment = 1
+vertical_alignment = 1
+visible = false
+
+[node name="LevelCompletePopup" type="Control" parent="UI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+
+[node name="Background" type="ColorRect" parent="UI/LevelCompletePopup"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.5)
+
+[node name="Panel" type="Panel" parent="UI/LevelCompletePopup"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -150.0
+offset_right = 250.0
+offset_bottom = 150.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_1")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/LevelCompletePopup/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+
+[node name="Label" type="Label" parent="UI/LevelCompletePopup/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "关卡完成！"
+horizontal_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="UI/LevelCompletePopup/Panel/VBoxContainer"]
+layout_mode = 2
+text = "统计信息"
+horizontal_alignment = 1
+
+[node name="RewardLabel" type="Label" parent="UI/LevelCompletePopup/Panel/VBoxContainer"]
+layout_mode = 2
+text = "奖励信息"
+horizontal_alignment = 1
+
+[node name="ContinueButton" type="Button" parent="UI/LevelCompletePopup/Panel/VBoxContainer"]
+layout_mode = 2
+text = "继续下一关"
+
+[node name="PetRewardPopup" type="Control" parent="UI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+
+[node name="Background" type="ColorRect" parent="UI/PetRewardPopup"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.3)
+
+[node name="Panel" type="Panel" parent="UI/PetRewardPopup"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = 100.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/PetRewardPopup/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+
+[node name="PetLabel" type="Label" parent="UI/PetRewardPopup/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "🐱"
+horizontal_alignment = 1
+
+[node name="MessageLabel" type="Label" parent="UI/PetRewardPopup/Panel/VBoxContainer"]
+layout_mode = 2
+text = "连击奖励消息"
+horizontal_alignment = 1
+
+[node name="CloseButton" type="Button" parent="UI/PetRewardPopup/Panel/VBoxContainer"]
+layout_mode = 2
+text = "太棒了！"
+
+[node name="Audio" type="Node" parent="."]
+
+[node name="CorrectSound" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="WrongSound" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="TimeoutSound" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="ShatterSound" type="AudioStreamPlayer" parent="Audio"]
