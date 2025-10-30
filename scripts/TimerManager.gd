@@ -215,6 +215,26 @@ func update_game_progress(level: int, coins: int, correct_answers: int = 0):
 	saved_correct_answers = correct_answers
 	print("更新游戏进度: 关卡 %d, 金币 %d" % [level, coins])
 
+func clear_all_saved_data():
+	"""清空所有保存的游戏与计时数据"""
+	saved_level = 1
+	saved_coins = 0
+	saved_correct_answers = 0
+	game_time_remaining = GAME_TIME_LIMIT
+	rest_time_remaining = 0.0
+	current_state = GameState.PLAYING
+	is_timer_active = false
+
+	var save_paths = [SAVE_FILE_PATH, "user://timer_state.save"]
+	for path in save_paths:
+		if FileAccess.file_exists(path):
+			var error = DirAccess.remove_absolute(path)
+			if error != OK:
+				print("无法删除保存文件: %s" % path)
+
+	emit_signal("state_changed", current_state)
+	print("所有游戏记录已清除")
+
 # ========== 计时器状态持久化 ==========
 func save_timer_state():
 	"""保存计时器状态到本地"""

@@ -4,6 +4,9 @@ class_name MainMenuManager
 # ========== 主菜单管理器 ==========
 # 负责关卡选择、解锁状态管理、健康时长检查
 
+# ========== 调试配置 ==========
+const DEBUG_AUTO_UNLOCK = false
+
 # ========== 关卡信息定义 ==========
 var level_definitions = [
 	{
@@ -51,6 +54,7 @@ var level_definitions = [
 @onready var settings_button = $UI/BottomPanel/SettingsButton
 @onready var exit_button = $UI/BottomPanel/ExitButton
 @onready var feedback_label = $UI/FeedbackLabel
+@onready var settings_dialog = $SettingsDialog
 
 # ========== 状态变量 ==========
 var level_buttons = []
@@ -61,6 +65,7 @@ func _ready():
 	print("MainMenu: 主菜单初始化")
 	setup_ui()
 	setup_health_timer()
+	setup_settings_dialog()
 	load_player_progress()
 	create_level_buttons()
 	update_unlock_status()
@@ -150,31 +155,37 @@ func load_player_progress():
 			
 			print("MainMenu: 加载进度 - 金币: %d, 已完成关卡: %d" % [total_coins, completed_level])
 	
-	# 临时解锁关卡用于测试
-	if not player_progress.has(1):
-		player_progress[1] = {
-			"completed": true,
-			"stars": 3
-		}
-		print("MainMenu: 临时标记第一关为已完成，解锁第二关")
-	
-	# 临时解锁第三关用于测试（开发期间）
-	if not player_progress.has(2):
-		player_progress[2] = {
-			"completed": true,
-			"stars": 3
-		}
-		print("MainMenu: 临时标记第二关为已完成，解锁第三关")
-	
-	# 临时解锁第四关用于测试（开发期间）
-	if not player_progress.has(3):
-		player_progress[3] = {
-			"completed": true,
-			"stars": 3
-		}
-		print("MainMenu: 临时标记第三关为已完成，解锁第四关")
-	
+	if DEBUG_AUTO_UNLOCK:
+		# 临时解锁关卡用于测试
+		if not player_progress.has(1):
+			player_progress[1] = {
+				"completed": true,
+				"stars": 3
+			}
+			print("MainMenu: 临时标记第一关为已完成，解锁第二关")
+
+		# 临时解锁第三关用于测试（开发期间）
+		if not player_progress.has(2):
+			player_progress[2] = {
+				"completed": true,
+				"stars": 3
+			}
+			print("MainMenu: 临时标记第二关为已完成，解锁第三关")
+
+		# 临时解锁第四关用于测试（开发期间）
+		if not player_progress.has(3):
+			player_progress[3] = {
+				"completed": true,
+				"stars": 3
+			}
+			print("MainMenu: 临时标记第三关为已完成，解锁第四关")
+
 	update_stats_display()
+
+func setup_settings_dialog():
+	"""设置对话框事件"""
+	if settings_dialog:
+		settings_dialog.confirmed.connect(_on_settings_dialog_confirmed)
 
 func save_player_progress():
 	"""保存玩家进度"""
@@ -286,7 +297,23 @@ func _on_level_selected(level_def: Dictionary):
 func _on_settings_pressed():
 	"""设置按钮点击"""
 	print("MainMenu: 设置按钮点击")
-	show_feedback("设置功能开发中...", Color.BLUE)
+	if settings_dialog:
+		settings_dialog.popup_centered()
+
+func _on_settings_dialog_confirmed():
+	"""确认清空游戏记录"""
+	print("MainMenu: 确认清空游戏记录")
+	reset_progress_data()
+	if TimerManager:
+		TimerManager.clear_all_saved_data()
+	show_feedback("已清空游戏记录，从零开始冒险吧！", Color.GREEN)
+
+func reset_progress_data():
+	"""重置本地的关卡进度数据"""
+	player_progress.clear()
+	total_coins = 0
+	update_unlock_status()
+	update_stats_display()
 
 func _on_exit_pressed():
 	"""退出按钮点击"""
@@ -326,15 +353,12 @@ func debug_unlock_all_levels():
 
 func debug_reset_progress():
 	"""调试：重置游戏进度"""
-	player_progress.clear()
-	total_coins = 0
-	update_unlock_status()
-	update_stats_display()
-	
+	reset_progress_data()
+
 	# 清除保存文件
 	if TimerManager:
-		TimerManager.update_game_progress(1, 0, 0)
-	
+		TimerManager.clear_all_saved_data()
+
 	print("调试：已重置游戏进度")
 
 # ========== 特殊输入处理 ==========
