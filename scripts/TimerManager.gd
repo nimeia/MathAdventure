@@ -185,7 +185,7 @@ func save_game_progress():
 	print("游戏进度已保存: 关卡 %d, 金币 %d" % [saved_level, saved_coins])
 
 func load_game_progress() -> Dictionary:
-	"""加载游戏进度"""
+        """加载游戏进度并同步内部状态"""
 	if not FileAccess.file_exists(SAVE_FILE_PATH):
 		print("没有找到游戏进度文件")
 		return {}
@@ -204,16 +204,45 @@ func load_game_progress() -> Dictionary:
 		print("游戏进度文件格式错误")
 		return {}
 	
-	var save_data = json.data
-	print("游戏进度已加载: 关卡 %d, 金币 %d" % [save_data.get("level", 1), save_data.get("coins", 0)])
-	return save_data
+        var save_data = json.data
+
+        # 同步内部缓存，避免旧状态覆盖最新进度
+        saved_level = int(save_data.get("level", saved_level))
+        saved_coins = int(save_data.get("coins", saved_coins))
+        saved_correct_answers = int(save_data.get("correct_answers", saved_correct_answers))
+
+        print("游戏进度已加载: 关卡 %d, 金币 %d" % [saved_level, saved_coins])
+        return save_data
 
 func update_game_progress(level: int, coins: int, correct_answers: int = 0):
-	"""更新游戏进度数据"""
-	saved_level = level
-	saved_coins = coins
-	saved_correct_answers = correct_answers
-	print("更新游戏进度: 关卡 %d, 金币 %d" % [level, coins])
+        """更新游戏进度数据"""
+        # 防止较低进度覆盖更高进度
+        saved_level = max(saved_level, level)
+        saved_coins = max(saved_coins, coins)
+        saved_correct_answers = max(saved_correct_answers, correct_answers)
+
+        print("更新游戏进度: 关卡 %d, 金币 %d" % [saved_level, saved_coins])
+        save_game_progress()
+
+func clear_all_saved_data():
+	"""清空所有保存的游戏与计时数据"""
+	saved_level = 1
+	saved_coins = 0
+	saved_correct_answers = 0
+	game_time_remaining = GAME_TIME_LIMIT
+	rest_time_remaining = 0.0
+	current_state = GameState.PLAYING
+	is_timer_active = false
+
+	var save_paths = [SAVE_FILE_PATH, "user://timer_state.save"]
+	for path in save_paths:
+		if FileAccess.file_exists(path):
+			var error = DirAccess.remove_absolute(path)
+			if error != OK:
+				print("无法删除保存文件: %s" % path)
+
+	emit_signal("state_changed", current_state)
+	print("所有游戏记录已清除")
 
 # ========== 计时器状态持久化 ==========
 func save_timer_state():
