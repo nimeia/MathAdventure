@@ -288,10 +288,14 @@ func check_level_completion():
 		generate_new_question()
 
 func complete_level():
-	print("第 %d 关完成！正确答案：%d/%d" % [current_level, correct_answers, QUESTIONS_PER_LEVEL])
-	
-	# 显示关卡完成弹窗
-	show_level_complete_popup()
+        print("第 %d 关完成！正确答案：%d/%d" % [current_level, correct_answers, QUESTIONS_PER_LEVEL])
+
+        # 完成关卡后立即保存进度，解锁下一关
+        if TimerManager:
+                TimerManager.update_game_progress(current_level + 1, coins, correct_answers)
+
+        # 显示关卡完成弹窗
+        show_level_complete_popup()
 
 func show_level_complete_popup():
 	level_complete_popup.visible = true

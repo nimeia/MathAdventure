@@ -546,9 +546,10 @@ func _on_game_time_expired():
 
 # ========== 数据保存 ==========
 func save_progress():
-	"""保存游戏进度"""
-	if TimerManager:
-		TimerManager.update_game_progress(current_level, coins, correct_answers)
+        """保存游戏进度"""
+        if TimerManager:
+                # 使用 current_level + 1 直接解锁下一关，防止未点击按钮时进度丢失
+                TimerManager.update_game_progress(current_level + 1, coins, correct_answers)
 
 # ========== 工具函数 ==========
 func get_comparison_symbol_text(comparison: ComparisonButton.ComparisonType) -> String:
