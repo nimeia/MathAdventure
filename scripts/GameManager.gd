@@ -2,11 +2,11 @@ extends Control
 class_name GameManager
 
 # ========== 游戏常量定义 ==========
-const COUNTDOWN_TIME = 5.0  # 倒计时秒数
-const MIN_FRUITS = 3  # 最少果子数量
-const MAX_FRUITS = 9  # 最多果子数量
-const QUESTIONS_PER_LEVEL = 5  # 每关题目数量
-const COIN_REWARD = 1  # 答对奖励金币数
+const COUNTDOWN_TIME = 5.0 # 倒计时秒数
+const MIN_FRUITS = 3 # 最少果子数量
+const MAX_FRUITS = 9 # 最多果子数量
+const QUESTIONS_PER_LEVEL = 5 # 每关题目数量
+const COIN_REWARD = 1 # 答对奖励金币数
 
 # ========== 游戏状态变量 ==========
 var current_level = 1
@@ -17,7 +17,7 @@ var current_fruit_count = 0
 var correct_answer = 0
 var countdown_timer = 0.0
 var is_waiting_for_answer = false
-var is_timer_blinking = false  # 用于防止重复闪烁动画
+var is_timer_blinking = false # 用于防止重复闪烁动画
 
 # ========== 节点引用 ==========
 @onready var fruit_tree = $FruitTree
@@ -141,7 +141,7 @@ func generate_new_question():
 func generate_answer_options():
 	# 生成三个选项：正确答案 + 两个干扰项
 	var options = []
-	options.append(correct_answer)  # 正确答案
+	options.append(correct_answer) # 正确答案
 	
 	# 生成干扰项（±1，确保不重复且在合理范围内）
 	var distractor1 = correct_answer - 1
@@ -150,7 +150,7 @@ func generate_answer_options():
 	# 确保干扰项在合理范围内
 	if distractor1 < 1:
 		distractor1 = correct_answer + 2
-	if distractor2 > 15:  # 假设最大不超过15
+	if distractor2 > 15: # 假设最大不超过15
 		distractor2 = correct_answer - 2
 	
 	options.append(distractor1)
@@ -288,14 +288,14 @@ func check_level_completion():
 		generate_new_question()
 
 func complete_level():
-        print("第 %d 关完成！正确答案：%d/%d" % [current_level, correct_answers, QUESTIONS_PER_LEVEL])
+	print("第 %d 关完成！正确答案：%d/%d" % [current_level, correct_answers, QUESTIONS_PER_LEVEL])
 
-        # 完成关卡后立即保存进度，解锁下一关
-        if TimerManager:
-                TimerManager.update_game_progress(current_level + 1, coins, correct_answers)
+	# 完成关卡后立即保存进度，解锁下一关
+	if TimerManager:
+		TimerManager.update_game_progress(current_level + 1, coins, correct_answers)
+		# 显示关卡完成弹窗
+		show_level_complete_popup()
 
-        # 显示关卡完成弹窗
-        show_level_complete_popup()
 
 func show_level_complete_popup():
 	level_complete_popup.visible = true
@@ -317,7 +317,7 @@ func _on_continue_button_pressed():
 		# 保存当前的current_level + 1代表解锁下一关
 		TimerManager.update_game_progress(current_level + 1, coins, 0)
 	
-	show_feedback("返回主菜单选择下一关..." , Color.BLUE)
+	show_feedback("返回主菜单选择下一关...", Color.BLUE)
 	await get_tree().create_timer(2.0).timeout
 	
 	# 返回主菜单
@@ -385,7 +385,7 @@ func _on_game_time_updated(time_remaining: float):
 		# 最后1分钟时变红提醒
 		if time_remaining <= 60:
 			game_timer_label.modulate = Color.RED
-		elif time_remaining <= 180:  # 最后3分钟时变黄
+		elif time_remaining <= 180: # 最后3分钟时变黄
 			game_timer_label.modulate = Color.YELLOW
 		else:
 			game_timer_label.modulate = Color.WHITE
@@ -520,7 +520,7 @@ func play_timer_blink_animation():
 	
 	is_timer_blinking = true
 	var tween = create_tween()
-	tween.set_loops(3)  # 闪烁3次
+	tween.set_loops(3) # 闪烁3次
 	tween.tween_property(question_timer_overlay, "scale", Vector2(1.2, 1.2), 0.15)
 	tween.tween_property(question_timer_overlay, "scale", Vector2(1.0, 1.0), 0.15)
 	
@@ -546,6 +546,5 @@ func setup_back_button():
 	"""设置返回按钮"""
 	# 在main.tscn场景中动态创建返回按钮
 	var back_button = BackToMenuButton.create_back_button(self, Vector2(20, 20))
-	back_button.z_index = 100  # 确保在最上层
+	back_button.z_index = 100 # 确保在最上层
 	print("GameManager: 返回按钮设置完成")
-	

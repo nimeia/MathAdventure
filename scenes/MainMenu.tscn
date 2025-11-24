@@ -26,8 +26,8 @@ script = ExtResource("1_1a2b3")
 
 [node name="SettingsDialog" type="ConfirmationDialog" parent="."]
 title = "游戏设置"
-dialog_text = "确定要清空游戏的记录数据吗？此操作无法撤销。"
 ok_button_text = "清空记录"
+dialog_text = "确定要清空游戏的记录数据吗？此操作无法撤销。"
 cancel_button_text = "取消"
 
 [node name="Background" type="TextureRect" parent="."]
