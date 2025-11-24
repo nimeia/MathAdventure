@@ -139,21 +139,25 @@ func create_level_buttons():
 
 # ========== 进度管理 ==========
 func load_player_progress():
-	"""加载玩家进度"""
-	if TimerManager:
-		var save_data = TimerManager.load_game_progress()
-		if not save_data.is_empty():
-			total_coins = save_data.get("coins", 0)
-			var completed_level = save_data.get("level", 1) - 1  # 减1因为保存的是当前关卡
-			
-			# 标记已完成的关卡
-			for i in range(completed_level):
-				player_progress[i + 1] = {
-					"completed": true,
-					"stars": 3  # 默认结3星，以后可以根据实际表现计算
-				}
-			
-			print("MainMenu: 加载进度 - 金币: %d, 已完成关卡: %d" % [total_coins, completed_level])
+        """加载玩家进度"""
+        if TimerManager:
+                var save_data = TimerManager.load_game_progress()
+
+                # 如果磁盘没有记录，也使用内存中的最高关卡作为兜底
+                var highest_level = max(TimerManager.saved_level, save_data.get("level", 1))
+                total_coins = save_data.get("coins", 0)
+
+                # 减1因为保存的是“已解锁的下一关”
+                var completed_level = max(highest_level - 1, 0)
+
+                # 标记已完成的关卡
+                for i in range(completed_level):
+                        player_progress[i + 1] = {
+                                "completed": true,
+                                "stars": 3  # 默认结3星，以后可以根据实际表现计算
+                        }
+
+                print("MainMenu: 加载进度 - 金币: %d, 已完成关卡: %d" % [total_coins, completed_level])
 	
 	if DEBUG_AUTO_UNLOCK:
 		# 临时解锁关卡用于测试
