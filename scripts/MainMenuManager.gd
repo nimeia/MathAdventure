@@ -142,62 +142,72 @@ func create_level_buttons():
 
 # ========== 进度管理 ==========
 func load_player_progress():
-        """加载玩家进度"""
-        # 先尝试读取主菜单自己的持久化记录
-        var local_progress = _load_local_progress()
-        if local_progress.size() > 0:
-                player_progress = local_progress.get("progress", {})
-                total_coins = local_progress.get("coins", 0)
-                print("MainMenu: 从本地保存加载进度 - 金币: %d, 已完成关卡: %d" % [total_coins, player_progress.size()])
-                update_stats_display()
-                return
+    """加载玩家进度"""
+    # 先尝试读取主菜单自己的持久化记录
+    var local_progress = _load_local_progress()
+    if local_progress.size() > 0:
+        player_progress = local_progress.get("progress", {})
+        total_coins = local_progress.get("coins", 0)
+        print("MainMenu: 从本地保存加载进度 - 金币: %d, 已完成关卡: %d" % [total_coins, player_progress.size()])
 
-        if TimerManager:
-                var save_data = TimerManager.load_game_progress()
+    # 始终与 TimerManager 持久化数据同步，避免本地存档滞后导致进度丢失
+    if TimerManager:
+        var save_data = TimerManager.load_game_progress()
+        var highest_level = max(TimerManager.saved_level, save_data.get("level", 1))
+        var synced_coins = save_data.get("coins", total_coins)
+        var completed_level = max(highest_level - 1, 0)
 
-                # 如果磁盘没有记录，也使用内存中的最高关卡作为兜底
-                var highest_level = max(TimerManager.saved_level, save_data.get("level", 1))
-                total_coins = save_data.get("coins", 0)
+        var updated = false
 
-                # 减1因为保存的是“已解锁的下一关”
-                var completed_level = max(highest_level - 1, 0)
+        # 使用更高的金币数值
+        if synced_coins > total_coins:
+            total_coins = synced_coins
+            updated = true
 
-                # 标记已完成的关卡
-                for i in range(completed_level):
-                        player_progress[i + 1] = {
-                                "completed": true,
-                                "stars": 3  # 默认结3星，以后可以根据实际表现计算
-                        }
+        # 根据最高解锁关卡补齐已完成关卡，防止旧本地文件覆盖最新进度
+        for i in range(completed_level):
+            var level_num = i + 1
+            if not player_progress.has(level_num) or not player_progress[level_num].get("completed", false):
+                player_progress[level_num] = {
+                    "completed": true,
+                    "stars": player_progress.get(level_num, {}).get("stars", 3)
+                }
+                updated = true
 
-                print("MainMenu: 加载进度 - 金币: %d, 已完成关卡: %d" % [total_coins, completed_level])
+        if updated:
+            print("MainMenu: 已根据存档同步进度 - 解锁到第 %d 关, 金币 %d" % [highest_level, total_coins])
+            _save_local_progress()
+    else:
+        print("MainMenu: TimerManager 不可用，使用本地存档")
 
-        # 没有本地存档时，使用计时管理器数据并立即保存一份，确保下次启动可直接恢复
+    # 如果没有任何数据，至少保存一次默认进度
+    if player_progress.is_empty() and not FileAccess.file_exists(PROGRESS_SAVE_PATH):
         _save_local_progress()
 
-        if DEBUG_AUTO_UNLOCK:
-                # 临时解锁关卡用于测试
-                if not player_progress.has(1):
-                        player_progress[1] = {
-                                "completed": true,
-                                "stars": 3
-                        }
-                        print("MainMenu: 临时标记第一关为已完成，解锁第二关")
+    if DEBUG_AUTO_UNLOCK:
+        # 临时解锁关卡用于测试
+        if not player_progress.has(1):
+            player_progress[1] = {
+                "completed": true,
+                "stars": 3
+            }
+            print("MainMenu: 临时标记第一关为已完成，解锁第二关")
 
-                # 临时解锁第三关用于测试（开发期间）
-                if not player_progress.has(2):
-                        player_progress[2] = {
-                                "completed": true,
-                                "stars": 3
-                        }
-                        print("MainMenu: 临时标记第二关为已完成，解锁第三关")
+        # 临时解锁第三关用于测试（开发期间）
+        if not player_progress.has(2):
+            player_progress[2] = {
+                "completed": true,
+                "stars": 3
+            }
+            print("MainMenu: 临时标记第二关为已完成，解锁第三关")
 
-                # 临时解锁第四关用于测试（开发期间）
-                if not player_progress.has(3):
-                        player_progress[3] = {
-                                "completed": true,
-                                "stars": 3
-                        }
-                        print("MainMenu: 临时标记第三关为已完成，解锁第四关")
+        # 临时解锁第四关用于测试（开发期间）
+        if not player_progress.has(3):
+            player_progress[3] = {
+                "completed": true,
+                "stars": 3
+            }
+            print("MainMenu: 临时标记第三关为已完成，解锁第四关")
 
         update_stats_display()
 
