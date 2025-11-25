@@ -34,9 +34,16 @@ signal rest_time_completed()  # 休息时间完成
 signal state_changed(new_state: GameState)  # 状态改变
 
 func _ready():
-	print("TimerManager 初始化完成")
-	# 启动时检查是否有未完成的休息时间
-	load_timer_state()
+        print("TimerManager 初始化完成")
+        # 启动时检查是否有未完成的休息时间
+        load_timer_state()
+
+func _notification(what):
+        """在应用退出前保存进度和计时状态，防止数据丢失"""
+        match what:
+                NOTIFICATION_WM_CLOSE_REQUEST, NOTIFICATION_APPLICATION_EXIT, NOTIFICATION_EXIT_TREE:
+                        save_game_progress()
+                        save_timer_state()
 
 func _process(delta):
 	if not is_timer_active:
