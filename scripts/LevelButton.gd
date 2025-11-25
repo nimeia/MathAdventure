@@ -25,8 +25,8 @@ var star_count: int = 0  # 星级评价 (0-3)
 @onready var stars_container = HBoxContainer.new()
 
 func _ready():
-	# 设置按钮基本属性
-	custom_minimum_size = BUTTON_SIZE
+        # 设置按钮基本属性
+        custom_minimum_size = BUTTON_SIZE
 	
 	# 创建UI布局
 	setup_button_layout()
@@ -34,11 +34,14 @@ func _ready():
 	# 设置按钮样式
 	setup_button_style()
 	
-	# 连接按钮点击信号（备用）
-	pressed.connect(_on_button_pressed)
-	
-	# 更新显示状态
-	update_button_display()
+        # 连接按钮点击信号（备用）
+        pressed.connect(_on_button_pressed)
+
+        if LanguageManager:
+                LanguageManager.language_changed.connect(_on_language_changed)
+
+        # 更新显示状态
+        update_button_display()
 
 func setup_button_layout():
 	"""设置按钮内部布局"""
@@ -188,14 +191,14 @@ func update_button_display():
 		disabled = false  # 保持可点击，但在点击处理中检查锁定状态
 		modulate.a = 0.6
 		
-		if lock_icon:
-			lock_icon.visible = true
-		if level_icon:
-			level_icon.visible = false
-		if level_title_label:
-			level_title_label.text = "???"
-		if level_desc_label:
-			level_desc_label.text = "未解锁"
+                if lock_icon:
+                        lock_icon.visible = true
+                if level_icon:
+                        level_icon.visible = false
+                if level_title_label:
+                        level_title_label.text = LanguageManager.tr_text("locked_title")
+                if level_desc_label:
+                        level_desc_label.text = LanguageManager.tr_text("locked_desc")
 		
 		apply_locked_style()
 		
@@ -317,10 +320,10 @@ func update_stars_display():
 		stars_container.add_child(star_label)
 
 func play_click_animation():
-	"""播放点击动画"""
-	if not is_unlocked:
-		# 锁定状态的摇摆动画
-		var tween = create_tween()
+        """播放点击动画"""
+        if not is_unlocked:
+                # 锁定状态的摇摆动画
+                var tween = create_tween()
 		tween.tween_property(self, "rotation", 0.1, 0.1)
 		tween.tween_property(self, "rotation", -0.1, 0.1)
 		tween.tween_property(self, "rotation", 0.05, 0.1)
@@ -328,14 +331,17 @@ func play_click_animation():
 		return
 	
 	# 正常点击动画
-	var tween = create_tween()
-	tween.set_parallel(true)
-	tween.tween_property(self, "scale", Vector2(0.95, 0.95), 0.1)
-	tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.1).set_delay(0.1)
+        var tween = create_tween()
+        tween.set_parallel(true)
+        tween.tween_property(self, "scale", Vector2(0.95, 0.95), 0.1)
+        tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.1).set_delay(0.1)
+
+func _on_language_changed():
+        update_button_display()
 
 func _on_button_pressed():
-	"""按钮点击处理"""
-	play_click_animation()
+        """按钮点击处理"""
+        play_click_animation()
 	
 	if not is_unlocked:
 		print("LevelButton: 关卡 %d 尚未解锁" % level_number)
