@@ -12,41 +12,71 @@ const DEBUG_AUTO_UNLOCK = false
 
 # ========== 关卡信息定义 ==========
 var level_definitions = [
-	{
-		"number": 1,
-		"title": "数数果园",
-		"description": "数一数树上的苹果",
-		"scene_path": "res://main.tscn",
-		"unlock_requirement": 0  # 默认解锁
-	},
-	{
-		"number": 2,
-		"title": "比较大小桥",
-		"description": "选择正确的符号",
-		"scene_path": "res://scenes/Level2.tscn",
-		"unlock_requirement": 1  # 需要完成第1关
-	},
-	{
-		"number": 3,
-		"title": "加减法迷宫",
-		"description": "走出数学迷宫，收集宝藏！",
-		"scene_path": "res://scenes/MazeScene.tscn",
-		"unlock_requirement": 2  # 需要完成第2关
-	},
-	{
-		"number": 4,
-		"title": "糖果商店",
-		"description": "计算找零，成为小店长！",
-		"scene_path": "res://scenes/CandyShopScene.tscn",
-		"unlock_requirement": 3  # 需要完成第3关
-	},
-	{
-		"number": 5,
-		"title": "乘法森林",
-		"description": "即将开放...",
-		"scene_path": "",
-		"unlock_requirement": 4  # 需要完成第4关
-	}
+        {
+                "number": 1,
+                "title": {
+                        "en": "Counting Orchard",
+                        "zh": "数数果园"
+                },
+                "description": {
+                        "en": "Count the apples on the tree",
+                        "zh": "数一数树上的苹果"
+                },
+                "scene_path": "res://main.tscn",
+                "unlock_requirement": 0  # 默认解锁
+        },
+        {
+                "number": 2,
+                "title": {
+                        "en": "Comparison Bridge",
+                        "zh": "比较大小桥"
+                },
+                "description": {
+                        "en": "Pick the correct symbol",
+                        "zh": "选择正确的符号"
+                },
+                "scene_path": "res://scenes/Level2.tscn",
+                "unlock_requirement": 1  # 需要完成第1关
+        },
+        {
+                "number": 3,
+                "title": {
+                        "en": "Addition & Subtraction Maze",
+                        "zh": "加减法迷宫"
+                },
+                "description": {
+                        "en": "Walk out of the math maze and collect treasure!",
+                        "zh": "走出数学迷宫，收集宝藏！"
+                },
+                "scene_path": "res://scenes/MazeScene.tscn",
+                "unlock_requirement": 2  # 需要完成第2关
+        },
+        {
+                "number": 4,
+                "title": {
+                        "en": "Candy Shop",
+                        "zh": "糖果商店"
+                },
+                "description": {
+                        "en": "Calculate change and become the shopkeeper!",
+                        "zh": "计算找零，成为小店长！"
+                },
+                "scene_path": "res://scenes/CandyShopScene.tscn",
+                "unlock_requirement": 3  # 需要完成第3关
+        },
+        {
+                "number": 5,
+                "title": {
+                        "en": "Multiplication Forest",
+                        "zh": "乘法森林"
+                },
+                "description": {
+                        "en": "Coming soon...",
+                        "zh": "即将开放..."
+                },
+                "scene_path": "",
+                "unlock_requirement": 4  # 需要完成第4关
+        }
 ]
 
 # ========== 节点引用 ==========
@@ -58,6 +88,8 @@ var level_definitions = [
 @onready var exit_button = $UI/BottomPanel/ExitButton
 @onready var feedback_label = $UI/FeedbackLabel
 @onready var settings_dialog = $SettingsDialog
+@onready var language_label = $SettingsDialog/MarginContainer/VBoxContainer/LanguageLabel
+@onready var language_option = $SettingsDialog/MarginContainer/VBoxContainer/LanguageOption
 
 # ========== 状态变量 ==========
 var level_buttons = []
@@ -65,39 +97,39 @@ var player_progress = {}  # 存储玩家进度
 var total_coins = 0
 
 func _ready():
-	print("MainMenu: 主菜单初始化")
-	setup_ui()
-	setup_health_timer()
-	setup_settings_dialog()
-	load_player_progress()
-	create_level_buttons()
-	update_unlock_status()
-	check_game_availability()
+        print("MainMenu: 主菜单初始化")
+        setup_ui()
+        setup_health_timer()
+        setup_settings_dialog()
+        load_player_progress()
+        create_level_buttons()
+        update_unlock_status()
+        apply_language()
+        LanguageManager.language_changed.connect(_on_language_changed)
+        check_game_availability()
 
 # ========== UI 初始化 ==========
 func setup_ui():
-	"""初始化UI元素"""
-	if title_label:
-		title_label.text = "🎮 数学冒险"
-		title_label.add_theme_font_size_override("font_size", 48)
-		title_label.add_theme_color_override("font_color", Color.WHITE)
-		title_label.add_theme_color_override("font_shadow_color", Color.BLACK)
-		title_label.add_theme_constant_override("shadow_offset_x", 3)
-		title_label.add_theme_constant_override("shadow_offset_y", 3)
-	
-	if subtitle_label:
-		subtitle_label.text = "选择你想挑战的关卡"
-		subtitle_label.add_theme_font_size_override("font_size", 20)
-		subtitle_label.modulate.a = 0.9
-	
-	if feedback_label:
-		feedback_label.visible = false
+        """初始化UI元素"""
+        if title_label:
+                title_label.add_theme_font_size_override("font_size", 48)
+                title_label.add_theme_color_override("font_color", Color.WHITE)
+                title_label.add_theme_color_override("font_shadow_color", Color.BLACK)
+                title_label.add_theme_constant_override("shadow_offset_x", 3)
+                title_label.add_theme_constant_override("shadow_offset_y", 3)
+
+        if subtitle_label:
+                subtitle_label.add_theme_font_size_override("font_size", 20)
+                subtitle_label.modulate.a = 0.9
+
+        if feedback_label:
+                feedback_label.visible = false
 	
 	# 设置按钮事件
-	if settings_button:
-		settings_button.pressed.connect(_on_settings_pressed)
-	if exit_button:
-		exit_button.pressed.connect(_on_exit_pressed)
+        if settings_button:
+                settings_button.pressed.connect(_on_settings_pressed)
+        if exit_button:
+                exit_button.pressed.connect(_on_exit_pressed)
 	
 	print("MainMenu: UI初始化完成")
 
@@ -121,24 +153,24 @@ func create_level_buttons():
 	# 设置网格列数为2（两列布局）
 	level_grid.columns = 3
 	
-	# 创建关卡按钮
-	for level_def in level_definitions:
-		var level_button = LevelButton.new()
-		level_button.set_level_info(
-			level_def.number,
-			level_def.title,
-			level_def.description
-		)
+        # 创建关卡按钮
+        for level_def in level_definitions:
+                var level_button = LevelButton.new()
+                level_button.set_level_info(
+                        level_def.number,
+                        get_localized_level_title(level_def),
+                        get_localized_level_description(level_def)
+                )
 		
 		# 连接点击事件（在设置解锁状态前连接）
-		level_button.pressed.connect(_on_level_selected.bind(level_def))
-		print("MainMenu: 连接关卡 %d 的点击事件" % level_def.number)
+                level_button.pressed.connect(_on_level_selected.bind(level_def))
+                print("MainMenu: 连接关卡 %d 的点击事件" % level_def.number)
 		
 		# 添加到网格
-		level_grid.add_child(level_button)
-		level_buttons.append(level_button)
-		
-		print("MainMenu: 创建关卡按钮 - %d: %s" % [level_def.number, level_def.title])
+                level_grid.add_child(level_button)
+                level_buttons.append(level_button)
+
+                print("MainMenu: 创建关卡按钮 - %d: %s" % [level_def.number, get_localized_level_title(level_def)])
 
 # ========== 进度管理 ==========
 func load_player_progress():
@@ -276,9 +308,84 @@ func _load_local_progress() -> Dictionary:
 		}
 
 func setup_settings_dialog():
-	"""设置对话框事件"""
-	if settings_dialog:
-			settings_dialog.confirmed.connect(_on_settings_dialog_confirmed)
+        """设置对话框事件"""
+        if settings_dialog:
+                        settings_dialog.confirmed.connect(_on_settings_dialog_confirmed)
+        if language_option:
+                        language_option.item_selected.connect(_on_language_option_selected)
+
+func apply_language():
+        """根据当前语言更新UI文本"""
+        if title_label:
+                        title_label.text = LanguageManager.tr_text("game_title")
+
+        if subtitle_label:
+                        subtitle_label.text = LanguageManager.tr_text("game_subtitle")
+
+        if settings_button:
+                        settings_button.text = LanguageManager.tr_text("settings_button")
+
+        if exit_button:
+                        exit_button.text = LanguageManager.tr_text("exit_button")
+
+        if settings_dialog:
+                        settings_dialog.title = LanguageManager.tr_text("settings_title")
+                        settings_dialog.ok_button_text = LanguageManager.tr_text("settings_confirm")
+                        settings_dialog.cancel_button_text = LanguageManager.tr_text("settings_cancel")
+                        settings_dialog.dialog_text = LanguageManager.tr_text("settings_dialog_text")
+
+        if language_label:
+                        language_label.text = LanguageManager.tr_text("settings_language_label")
+
+        _refresh_language_options()
+        update_level_texts()
+        update_stats_display()
+
+func _refresh_language_options():
+        if not language_option:
+                        return
+
+        language_option.clear()
+        language_option.add_item(LanguageManager.tr_text("language_en"), 0)
+        language_option.add_item(LanguageManager.tr_text("language_zh"), 1)
+
+        if LanguageManager.get_language() == "zh":
+                        language_option.select(1)
+        else:
+                        language_option.select(0)
+
+func update_level_texts():
+        """根据语言刷新关卡按钮文本"""
+        if level_buttons.is_empty():
+                        return
+
+        for i in range(level_buttons.size()):
+                        var level_def = level_definitions[i]
+                        var level_button: LevelButton = level_buttons[i]
+                        level_button.set_level_info(
+                                level_def.number,
+                                get_localized_level_title(level_def),
+                                get_localized_level_description(level_def)
+                        )
+                        var is_unlocked = check_level_unlock(level_def)
+                        level_button.set_unlock_status(is_unlocked)
+
+                        if player_progress.has(level_def.number):
+                                        var progress = player_progress[level_def.number]
+                                        level_button.set_completion_status(
+                                                progress.get("completed", false),
+                                                progress.get("stars", 0)
+                                        )
+
+func get_localized_level_title(level_def: Dictionary) -> String:
+        var title_map: Dictionary = level_def.get("title", {})
+        var lang = LanguageManager.get_language()
+        return title_map.get(lang, title_map.get("en", ""))
+
+func get_localized_level_description(level_def: Dictionary) -> String:
+        var desc_map: Dictionary = level_def.get("description", {})
+        var lang = LanguageManager.get_language()
+        return desc_map.get(lang, desc_map.get("en", ""))
 
 func get_highest_unlocked_level() -> int:
 	"""获取最高解锁关卡"""
@@ -320,13 +427,16 @@ func check_level_unlock(level_def: Dictionary) -> bool:
 
 func update_stats_display():
 	"""更新玩家统计显示"""
-	if player_stats_label:
-		var completed_levels = 0
-		for progress in player_progress.values():
-			if progress.get("completed", false):
-				completed_levels += 1
-		
-		player_stats_label.text = "🪙 金币: %d | 🏆 完成关卡: %d/%d" % [total_coins, completed_levels, level_definitions.size()]
+        if player_stats_label:
+                var completed_levels = 0
+                for progress in player_progress.values():
+                        if progress.get("completed", false):
+                                        completed_levels += 1
+
+                player_stats_label.text = LanguageManager.format_text(
+                        "player_stats",
+                        [total_coins, completed_levels, level_definitions.size()]
+                )
 
 # ========== 游戏状态检查 ==========
 func check_game_availability():
@@ -337,17 +447,17 @@ func check_game_availability():
 		return
 
 func _on_timer_state_changed(new_state):
-	"""处理健康时长状态变化"""
-	if new_state == TimerManager.GameState.RESTING:
-		show_feedback("游戏时间到，请休息一下再来玩吧！", Color.ORANGE)
-		await get_tree().create_timer(2.0).timeout
-		get_tree().change_scene_to_file("res://scenes/RestScreen.tscn")
+        """处理健康时长状态变化"""
+        if new_state == TimerManager.GameState.RESTING:
+                show_feedback(LanguageManager.tr_text("feedback_timer_rest"), Color.ORANGE)
+                await get_tree().create_timer(2.0).timeout
+                get_tree().change_scene_to_file("res://scenes/RestScreen.tscn")
 
 # ========== 事件处理 ==========
 func _on_level_selected(level_def: Dictionary):
 	"""关卡被选择"""
-	var level_num = level_def.number
-	print("MainMenu: 选择关卡 %d - %s" % [level_num, level_def.title])
+        var level_num = level_def.number
+        print("MainMenu: 选择关卡 %d - %s" % [level_num, get_localized_level_title(level_def)])
 	print("MainMenu: 关卡信息: %s" % str(level_def))
 	print("MainMenu: 当前玩家进度: %s" % str(player_progress))
 	
@@ -355,27 +465,27 @@ func _on_level_selected(level_def: Dictionary):
 	var is_unlocked = check_level_unlock(level_def)
 	print("MainMenu: 关卡 %d 解锁状态: %s" % [level_num, is_unlocked])
 	
-	if not is_unlocked:
-		print("MainMenu: 关卡未解锁，显示提示")
-		show_feedback("此关卡尚未解锁，请先完成前面的关卡！", Color.RED)
-		return
+        if not is_unlocked:
+                print("MainMenu: 关卡未解锁，显示提示")
+                show_feedback(LanguageManager.tr_text("feedback_locked"), Color.RED)
+                return
 	
 	# 检查场景路径是否存在
-	if level_def.scene_path == "" or level_def.scene_path == null:
-		print("MainMenu: 关卡场景路径为空")
-		show_feedback("此关卡正在开发中，敬请期待！", Color.YELLOW)
-		return
+        if level_def.scene_path == "" or level_def.scene_path == null:
+                print("MainMenu: 关卡场景路径为空")
+                show_feedback(LanguageManager.tr_text("feedback_in_dev"), Color.YELLOW)
+                return
 	
 	# 检查健康时长
-	if TimerManager and TimerManager.is_in_rest_period():
-		print("MainMenu: 在休息期间")
-		show_feedback("休息时间未结束，请稍后再试！", Color.ORANGE)
-		return
+        if TimerManager and TimerManager.is_in_rest_period():
+                print("MainMenu: 在休息期间")
+                show_feedback(LanguageManager.tr_text("feedback_rest_time"), Color.ORANGE)
+                return
 	
 	# 保存进度并跳转
-	print("MainMenu: 即将进入关卡: %s" % level_def.scene_path)
-	save_player_progress()
-	show_feedback("正在进入关卡...", Color.GREEN)
+        print("MainMenu: 即将进入关卡: %s" % level_def.scene_path)
+        save_player_progress()
+        show_feedback(LanguageManager.tr_text("feedback_entering"), Color.GREEN)
 	
 	await get_tree().create_timer(1.0).timeout
 	get_tree().change_scene_to_file(level_def.scene_path)
@@ -387,12 +497,21 @@ func _on_settings_pressed():
 		settings_dialog.popup_centered()
 
 func _on_settings_dialog_confirmed():
-	"""确认清空游戏记录"""
-	print("MainMenu: 确认清空游戏记录")
-	reset_progress_data()
-	if TimerManager:
-		TimerManager.clear_all_saved_data()
-	show_feedback("已清空游戏记录，从零开始冒险吧！", Color.GREEN)
+        """确认清空游戏记录"""
+        print("MainMenu: 确认清空游戏记录")
+        reset_progress_data()
+        if TimerManager:
+                TimerManager.clear_all_saved_data()
+        show_feedback(LanguageManager.tr_text("feedback_record_cleared"), Color.GREEN)
+
+func _on_language_option_selected(index: int):
+        var lang = "en"
+        if index == 1:
+                        lang = "zh"
+        LanguageManager.set_language(lang)
+
+func _on_language_changed():
+        apply_language()
 
 func reset_progress_data():
 		"""重置本地的关卡进度数据"""
@@ -406,11 +525,11 @@ func reset_progress_data():
 				DirAccess.remove_absolute(PROGRESS_SAVE_PATH)
 
 func _on_exit_pressed():
-	"""退出按钮点击"""
-	print("MainMenu: 退出游戏")
-	show_feedback("感谢游玩数学冒险！", Color.PURPLE)
-	await get_tree().create_timer(1.0).timeout
-	get_tree().quit()
+        """退出按钮点击"""
+        print("MainMenu: 退出游戏")
+        show_feedback(LanguageManager.tr_text("feedback_thanks"), Color.PURPLE)
+        await get_tree().create_timer(1.0).timeout
+        get_tree().quit()
 
 # ========== 反馈系统 ==========
 func show_feedback(text: String, color: Color):
