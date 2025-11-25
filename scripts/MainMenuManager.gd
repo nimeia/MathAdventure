@@ -142,147 +142,147 @@ func create_level_buttons():
 
 # ========== 进度管理 ==========
 func load_player_progress():
-    """加载玩家进度"""
-    # 先尝试读取主菜单自己的持久化记录
-    var local_progress = _load_local_progress()
-    if local_progress.size() > 0:
-        player_progress = local_progress.get("progress", {})
-        total_coins = local_progress.get("coins", 0)
-        print("MainMenu: 从本地保存加载进度 - 金币: %d, 已完成关卡: %d" % [total_coins, player_progress.size()])
+	"""加载玩家进度"""
+	# 先尝试读取主菜单自己的持久化记录
+	var local_progress = _load_local_progress()
+	if local_progress.size() > 0:
+		player_progress = local_progress.get("progress", {})
+		total_coins = local_progress.get("coins", 0)
+		print("MainMenu: 从本地保存加载进度 - 金币: %d, 已完成关卡: %d" % [total_coins, player_progress.size()])
 
-    # 始终与 TimerManager 持久化数据同步，避免本地存档滞后导致进度丢失
-    if TimerManager:
-        var save_data = TimerManager.load_game_progress()
-        var highest_level = max(TimerManager.saved_level, save_data.get("level", 1))
-        var synced_coins = save_data.get("coins", total_coins)
-        var completed_level = max(highest_level - 1, 0)
+	# 始终与 TimerManager 持久化数据同步，避免本地存档滞后导致进度丢失
+	if TimerManager:
+		var save_data = TimerManager.load_game_progress()
+		var highest_level = max(TimerManager.saved_level, save_data.get("level", 1))
+		var synced_coins = save_data.get("coins", total_coins)
+		var completed_level = max(highest_level - 1, 0)
 
-        var updated = false
+		var updated = false
 
-        # 使用更高的金币数值
-        if synced_coins > total_coins:
-            total_coins = synced_coins
-            updated = true
+		# 使用更高的金币数值
+		if synced_coins > total_coins:
+			total_coins = synced_coins
+			updated = true
 
-        # 根据最高解锁关卡补齐已完成关卡，防止旧本地文件覆盖最新进度
-        for i in range(completed_level):
-            var level_num = i + 1
-            if not player_progress.has(level_num) or not player_progress[level_num].get("completed", false):
-                player_progress[level_num] = {
-                    "completed": true,
-                    "stars": player_progress.get(level_num, {}).get("stars", 3)
-                }
-                updated = true
+		# 根据最高解锁关卡补齐已完成关卡，防止旧本地文件覆盖最新进度
+		for i in range(completed_level):
+			var level_num = i + 1
+			if not player_progress.has(level_num) or not player_progress[level_num].get("completed", false):
+				player_progress[level_num] = {
+					"completed": true,
+					"stars": player_progress.get(level_num, {}).get("stars", 3)
+				}
+				updated = true
 
-        if updated:
-            print("MainMenu: 已根据存档同步进度 - 解锁到第 %d 关, 金币 %d" % [highest_level, total_coins])
-            _save_local_progress()
-    else:
-        print("MainMenu: TimerManager 不可用，使用本地存档")
+		if updated:
+			print("MainMenu: 已根据存档同步进度 - 解锁到第 %d 关, 金币 %d" % [highest_level, total_coins])
+			_save_local_progress()
+	else:
+		print("MainMenu: TimerManager 不可用，使用本地存档")
 
-    # 如果没有任何数据，至少保存一次默认进度
-    if player_progress.is_empty() and not FileAccess.file_exists(PROGRESS_SAVE_PATH):
-        _save_local_progress()
+	# 如果没有任何数据，至少保存一次默认进度
+	if player_progress.is_empty() and not FileAccess.file_exists(PROGRESS_SAVE_PATH):
+		_save_local_progress()
 
-    if DEBUG_AUTO_UNLOCK:
-        # 临时解锁关卡用于测试
-        if not player_progress.has(1):
-            player_progress[1] = {
-                "completed": true,
-                "stars": 3
-            }
-            print("MainMenu: 临时标记第一关为已完成，解锁第二关")
+	if DEBUG_AUTO_UNLOCK:
+		# 临时解锁关卡用于测试
+		if not player_progress.has(1):
+			player_progress[1] = {
+				"completed": true,
+				"stars": 3
+			}
+			print("MainMenu: 临时标记第一关为已完成，解锁第二关")
 
-        # 临时解锁第三关用于测试（开发期间）
-        if not player_progress.has(2):
-            player_progress[2] = {
-                "completed": true,
-                "stars": 3
-            }
-            print("MainMenu: 临时标记第二关为已完成，解锁第三关")
+		# 临时解锁第三关用于测试（开发期间）
+		if not player_progress.has(2):
+			player_progress[2] = {
+				"completed": true,
+				"stars": 3
+			}
+			print("MainMenu: 临时标记第二关为已完成，解锁第三关")
 
-        # 临时解锁第四关用于测试（开发期间）
-        if not player_progress.has(3):
-            player_progress[3] = {
-                "completed": true,
-                "stars": 3
-            }
-            print("MainMenu: 临时标记第三关为已完成，解锁第四关")
+		# 临时解锁第四关用于测试（开发期间）
+		if not player_progress.has(3):
+			player_progress[3] = {
+				"completed": true,
+				"stars": 3
+			}
+			print("MainMenu: 临时标记第三关为已完成，解锁第四关")
 
-        update_stats_display()
+		update_stats_display()
 
 func save_player_progress():
-        """保存玩家进度"""
-        if TimerManager:
-                # 这里可以保存更详细的进度信息
-                var highest_level = get_highest_unlocked_level()
-                TimerManager.update_game_progress(highest_level, total_coins, 0)
+		"""保存玩家进度"""
+		if TimerManager:
+				# 这里可以保存更详细的进度信息
+				var highest_level = get_highest_unlocked_level()
+				TimerManager.update_game_progress(highest_level, total_coins, 0)
 
-        # 同步保存主菜单的完整进度信息（包含每关完成状态）
-        _save_local_progress()
+		# 同步保存主菜单的完整进度信息（包含每关完成状态）
+		_save_local_progress()
 
 func _save_local_progress():
-        """将主菜单进度保存到本地文件"""
-        var save_file = FileAccess.open(PROGRESS_SAVE_PATH, FileAccess.WRITE)
-        if save_file == null:
-                print("MainMenu: 无法写入本地进度文件")
-                return
+		"""将主菜单进度保存到本地文件"""
+		var save_file = FileAccess.open(PROGRESS_SAVE_PATH, FileAccess.WRITE)
+		if save_file == null:
+				print("MainMenu: 无法写入本地进度文件")
+				return
 
-        # JSON键需要为字符串，保存时确保键被转换
-        var serialized_progress = {}
-        for level_num in player_progress.keys():
-                serialized_progress[str(level_num)] = player_progress[level_num]
+		# JSON键需要为字符串，保存时确保键被转换
+		var serialized_progress = {}
+		for level_num in player_progress.keys():
+				serialized_progress[str(level_num)] = player_progress[level_num]
 
-        var save_data = {
-                "coins": total_coins,
-                "progress": serialized_progress,
-                "timestamp": Time.get_unix_time_from_system()
-        }
+		var save_data = {
+				"coins": total_coins,
+				"progress": serialized_progress,
+				"timestamp": Time.get_unix_time_from_system()
+		}
 
-        save_file.store_string(JSON.stringify(save_data))
-        save_file.close()
-        print("MainMenu: 本地进度已保存 (关卡: %d, 金币: %d)" % [player_progress.size(), total_coins])
+		save_file.store_string(JSON.stringify(save_data))
+		save_file.close()
+		print("MainMenu: 本地进度已保存 (关卡: %d, 金币: %d)" % [player_progress.size(), total_coins])
 
 func _load_local_progress() -> Dictionary:
-        """加载主菜单的本地进度文件"""
-        if not FileAccess.file_exists(PROGRESS_SAVE_PATH):
-                return {}
+		"""加载主菜单的本地进度文件"""
+		if not FileAccess.file_exists(PROGRESS_SAVE_PATH):
+				return {}
 
-        var save_file = FileAccess.open(PROGRESS_SAVE_PATH, FileAccess.READ)
-        if save_file == null:
-                print("MainMenu: 无法读取本地进度文件")
-                return {}
+		var save_file = FileAccess.open(PROGRESS_SAVE_PATH, FileAccess.READ)
+		if save_file == null:
+				print("MainMenu: 无法读取本地进度文件")
+				return {}
 
-        var json_text = save_file.get_as_text()
-        save_file.close()
+		var json_text = save_file.get_as_text()
+		save_file.close()
 
-        var json = JSON.new()
-        var result = json.parse(json_text)
-        if result != OK:
-                print("MainMenu: 本地进度文件格式错误")
-                return {}
+		var json = JSON.new()
+		var result = json.parse(json_text)
+		if result != OK:
+				print("MainMenu: 本地进度文件格式错误")
+				return {}
 
-        var data = json.data
-        var raw_progress: Dictionary = data.get("progress", {})
-        var restored_progress = {}
+		var data = json.data
+		var raw_progress: Dictionary = data.get("progress", {})
+		var restored_progress = {}
 
-        for key in raw_progress.keys():
-                var level_num = int(key)
-                restored_progress[level_num] = raw_progress[key]
+		for key in raw_progress.keys():
+				var level_num = int(key)
+				restored_progress[level_num] = raw_progress[key]
 
-        return {
-                "coins": int(data.get("coins", 0)),
-                "progress": restored_progress
-        }
+		return {
+				"coins": int(data.get("coins", 0)),
+				"progress": restored_progress
+		}
 
 func setup_settings_dialog():
-        """设置对话框事件"""
-        if settings_dialog:
-                settings_dialog.confirmed.connect(_on_settings_dialog_confirmed)
+	"""设置对话框事件"""
+	if settings_dialog:
+			settings_dialog.confirmed.connect(_on_settings_dialog_confirmed)
 
 func get_highest_unlocked_level() -> int:
-        """获取最高解锁关卡"""
-        var highest = 1
+	"""获取最高解锁关卡"""
+	var highest = 1
 	for level_num in player_progress.keys():
 		if player_progress[level_num].get("completed", false):
 			highest = max(highest, level_num + 1)
@@ -395,15 +395,15 @@ func _on_settings_dialog_confirmed():
 	show_feedback("已清空游戏记录，从零开始冒险吧！", Color.GREEN)
 
 func reset_progress_data():
-        """重置本地的关卡进度数据"""
-        player_progress.clear()
-        total_coins = 0
-        update_unlock_status()
-        update_stats_display()
+		"""重置本地的关卡进度数据"""
+		player_progress.clear()
+		total_coins = 0
+		update_unlock_status()
+		update_stats_display()
 
-        # 删除本地保存的进度文件
-        if FileAccess.file_exists(PROGRESS_SAVE_PATH):
-                DirAccess.remove_absolute(PROGRESS_SAVE_PATH)
+		# 删除本地保存的进度文件
+		if FileAccess.file_exists(PROGRESS_SAVE_PATH):
+				DirAccess.remove_absolute(PROGRESS_SAVE_PATH)
 
 func _on_exit_pressed():
 	"""退出按钮点击"""

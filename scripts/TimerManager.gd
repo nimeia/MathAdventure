@@ -3,23 +3,23 @@ extends Node
 # 管理游戏时长、休息时间以及相关状态
 
 # ========== 健康游戏时长常量 ==========
-const GAME_TIME_LIMIT = 600.0  # 单次游戏时长上限（10分钟，单位：秒）
-const REST_TIME_REQUIRED = 600.0  # 强制休息时长（10分钟，单位：秒）
-const SAVE_FILE_PATH = "user://game_progress.save"  # 游戏进度保存路径
+const GAME_TIME_LIMIT = 600.0 # 单次游戏时长上限（10分钟，单位：秒）
+const REST_TIME_REQUIRED = 600.0 # 强制休息时长（10分钟，单位：秒）
+const SAVE_FILE_PATH = "user://game_progress.save" # 游戏进度保存路径
 
 # ========== 游戏状态枚举 ==========
 enum GameState {
-	PLAYING,     # 正常游戏中
-	TIME_UP,     # 游戏时间耗尽
-	RESTING,     # 休息中
+	PLAYING, # 正常游戏中
+	TIME_UP, # 游戏时间耗尽
+	RESTING, # 休息中
 	REST_COMPLETE # 休息完成，可以继续游戏
 }
 
 # ========== 状态变量 ==========
 var current_state: GameState = GameState.PLAYING
-var game_time_remaining: float = GAME_TIME_LIMIT  # 游戏剩余时间
-var rest_time_remaining: float = 0.0  # 休息剩余时间
-var is_timer_active: bool = false  # 计时器是否激活
+var game_time_remaining: float = GAME_TIME_LIMIT # 游戏剩余时间
+var rest_time_remaining: float = 0.0 # 休息剩余时间
+var is_timer_active: bool = false # 计时器是否激活
 
 # ========== 保存的游戏数据 ==========
 var saved_level: int = 1
@@ -27,23 +27,23 @@ var saved_coins: int = 0
 var saved_correct_answers: int = 0
 
 # ========== 信号定义 ==========
-signal game_time_updated(time_remaining: float)  # 游戏时间更新
-signal rest_time_updated(time_remaining: float)  # 休息时间更新
-signal game_time_expired()  # 游戏时间耗尽
-signal rest_time_completed()  # 休息时间完成
-signal state_changed(new_state: GameState)  # 状态改变
+signal game_time_updated(time_remaining: float) # 游戏时间更新
+signal rest_time_updated(time_remaining: float) # 休息时间更新
+signal game_time_expired() # 游戏时间耗尽
+signal rest_time_completed() # 休息时间完成
+signal state_changed(new_state: GameState) # 状态改变
 
 func _ready():
-        print("TimerManager 初始化完成")
-        # 启动时检查是否有未完成的休息时间
-        load_timer_state()
+	print("TimerManager 初始化完成")
+	# 启动时检查是否有未完成的休息时间
+	load_timer_state()
 
 func _notification(what):
-        """在应用退出前保存进度和计时状态，防止数据丢失"""
-        match what:
-                NOTIFICATION_WM_CLOSE_REQUEST, NOTIFICATION_APPLICATION_EXIT, NOTIFICATION_EXIT_TREE:
-                        save_game_progress()
-                        save_timer_state()
+	"""在应用退出前保存进度和计时状态，防止数据丢失"""
+	match what:
+		NOTIFICATION_WM_CLOSE_REQUEST,  NOTIFICATION_EXIT_TREE:
+			save_game_progress()
+			save_timer_state()
 
 func _process(delta):
 	if not is_timer_active:
@@ -87,7 +87,7 @@ func update_game_timer(delta: float):
 	if game_time_remaining <= 0:
 		game_time_remaining = 0
 		trigger_rest_period()
-
+		
 func trigger_rest_period():
 	"""触发休息时间"""
 	print("游戏时间到！开始休息时间")
@@ -192,7 +192,7 @@ func save_game_progress():
 	print("游戏进度已保存: 关卡 %d, 金币 %d" % [saved_level, saved_coins])
 
 func load_game_progress() -> Dictionary:
-        """加载游戏进度并同步内部状态"""
+	"""加载游戏进度并同步内部状态"""
 	if not FileAccess.file_exists(SAVE_FILE_PATH):
 		print("没有找到游戏进度文件")
 		return {}
@@ -211,45 +211,26 @@ func load_game_progress() -> Dictionary:
 		print("游戏进度文件格式错误")
 		return {}
 	
-        var save_data = json.data
+		var save_data = json.data
 
-        # 同步内部缓存，避免旧状态覆盖最新进度
-        saved_level = int(save_data.get("level", saved_level))
-        saved_coins = int(save_data.get("coins", saved_coins))
-        saved_correct_answers = int(save_data.get("correct_answers", saved_correct_answers))
+		# 同步内部缓存，避免旧状态覆盖最新进度
+		saved_level = int(save_data.get("level", saved_level))
+		saved_coins = int(save_data.get("coins", saved_coins))
+		saved_correct_answers = int(save_data.get("correct_answers", saved_correct_answers))
 
-        print("游戏进度已加载: 关卡 %d, 金币 %d" % [saved_level, saved_coins])
-        return save_data
+		print("游戏进度已加载: 关卡 %d, 金币 %d" % [saved_level, saved_coins])
+		return save_data
+	return json.data
 
 func update_game_progress(level: int, coins: int, correct_answers: int = 0):
-        """更新游戏进度数据"""
-        # 防止较低进度覆盖更高进度
-        saved_level = max(saved_level, level)
-        saved_coins = max(saved_coins, coins)
-        saved_correct_answers = max(saved_correct_answers, correct_answers)
+		"""更新游戏进度数据"""
+		# 防止较低进度覆盖更高进度
+		saved_level = max(saved_level, level)
+		saved_coins = max(saved_coins, coins)
+		saved_correct_answers = max(saved_correct_answers, correct_answers)
 
-        print("更新游戏进度: 关卡 %d, 金币 %d" % [saved_level, saved_coins])
-        save_game_progress()
-
-func clear_all_saved_data():
-	"""清空所有保存的游戏与计时数据"""
-	saved_level = 1
-	saved_coins = 0
-	saved_correct_answers = 0
-	game_time_remaining = GAME_TIME_LIMIT
-	rest_time_remaining = 0.0
-	current_state = GameState.PLAYING
-	is_timer_active = false
-
-	var save_paths = [SAVE_FILE_PATH, "user://timer_state.save"]
-	for path in save_paths:
-		if FileAccess.file_exists(path):
-			var error = DirAccess.remove_absolute(path)
-			if error != OK:
-				print("无法删除保存文件: %s" % path)
-
-	emit_signal("state_changed", current_state)
-	print("所有游戏记录已清除")
+		print("更新游戏进度: 关卡 %d, 金币 %d" % [saved_level, saved_coins])
+		save_game_progress()
 
 func clear_all_saved_data():
 	"""清空所有保存的游戏与计时数据"""
